@@ -24,7 +24,13 @@ function fmtDate(iso) {
   return d.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "short" });
 }
 function isoToday() {
-  return new Date().toISOString().slice(0, 10);
+  return toISO(new Date());
+}
+function toISO(dt) {
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth() + 1).padStart(2, "0");
+  const day = String(dt.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 function startOfWeek(date) {
   const d = new Date(date);
@@ -241,7 +247,7 @@ function renderPlanningWeek() {
   const el = $("#planning-week");
   el.innerHTML = days
     .map((d) => {
-      const iso = d.toISOString().slice(0, 10);
+      const iso = toISO(d);
       const items = sessionsOnDate(iso);
       const isToday = iso === todayIso;
       const dayLabel = d.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit" });
@@ -289,7 +295,7 @@ function renderPlanningMonth() {
   for (let i = 0; i < 42; i++) {
     const d = new Date(gridStart);
     d.setDate(d.getDate() + i);
-    const iso = d.toISOString().slice(0, 10);
+    const iso = toISO(d);
     const outside = d.getMonth() !== month;
     const isToday = iso === todayIso;
     const items = sessionsOnDate(iso);
@@ -387,7 +393,7 @@ function renderVolumeChart() {
   done.forEach((s) => {
     const d = new Date(s.date + "T00:00:00");
     const ws = startOfWeek(d);
-    const key = ws.toISOString().slice(0, 10);
+    const key = toISO(ws);
     weeks[key] = (weeks[key] || 0) + (parseFloat(s.distance) || 0);
   });
   const keys = Object.keys(weeks).sort().slice(-10);
@@ -678,7 +684,7 @@ function lastNDates(n) {
   for (let i = n - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    out.push(d.toISOString().slice(0, 10));
+    out.push(toISO(d));
   }
   return out;
 }

@@ -258,10 +258,6 @@ body{
   transition: border-color .15s, background .15s;
 }
 .food-chip:hover{ border-color: var(--nourriture); background: rgba(255,159,28,0.1); }
-  background: rgba(123,97,255,0.14); border: 1px solid var(--sommeil); color: var(--sommeil);
-  border-radius: 6px; padding: 0 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font-body);
-  white-space: nowrap;
-}
 
 /* ===== MODAL ===== */
 .modal-backdrop{
