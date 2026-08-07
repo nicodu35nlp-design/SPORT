@@ -1,0 +1,9 @@
+{
+  "name": "sport-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Suivi et planification d'entraînements - course, vélo, muscu, natation",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

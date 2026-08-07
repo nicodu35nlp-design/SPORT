@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Carnet — Suivi d'entraînement</title>
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== EN-TETE / BIB ===== -->
+  <header class="header">
+    <div class="bib">
+      <span class="bib-label">Carnet</span>
+      <h1 class="bib-title">Entraînement</h1>
+    </div>
+    <div class="countdown" id="countdown">
+      <div class="countdown-days"><span id="cd-days">--</span><small>jours</small></div>
+      <div class="countdown-meta">
+        <span class="countdown-race">Marathon · 08.11.2026</span>
+        <span class="countdown-goal">Objectif <strong>3h30</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== NAV ===== -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-view="dashboard">Tableau de bord</button>
+    <button class="tab" data-view="planning">Planning</button>
+    <button class="tab" data-view="journal">Journal</button>
+    <button class="tab" data-view="progression">Progression</button>
+    <button class="tab" data-view="sommeil">Sommeil</button>
+    <button class="tab" data-view="nourriture">Nourriture</button>
+  </nav>
+
+  <main class="views">
+
+    <!-- ===== DASHBOARD ===== -->
+    <section class="view active" id="view-dashboard">
+      <div class="week-strip" id="week-summary"></div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Prochaines séances</h2>
+            <button class="link-btn" data-goto="planning">Voir tout →</button>
+          </div>
+          <div id="dash-next" class="session-list compact"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Dernières réalisées</h2>
+            <button class="link-btn" data-goto="journal">Voir tout →</button>
+          </div>
+          <div id="dash-recent" class="session-list compact"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PLANNING ===== -->
+    <section class="view" id="view-planning">
+      <div class="panel-head">
+        <h2>Planning</h2>
+        <button class="btn-accent" id="btn-new-planned">+ Planifier une séance</button>
+      </div>
+
+      <div class="planning-controls">
+        <div class="view-toggle" id="planning-toggle">
+          <button class="active" data-mode="week">Semaine</button>
+          <button data-mode="month">Mois</button>
+        </div>
+        <div class="date-nav">
+          <button id="nav-prev">‹</button>
+          <span class="date-label" id="nav-label">—</span>
+          <button id="nav-next">›</button>
+          <button class="today-btn" id="nav-today">Aujourd'hui</button>
+        </div>
+      </div>
+
+      <div id="planning-week" class="week-grid"></div>
+      <div id="planning-month" class="month-grid" style="display:none"></div>
+    </section>
+
+    <!-- ===== JOURNAL ===== -->
+    <section class="view" id="view-journal">
+      <div class="panel-head">
+        <h2>Séances réalisées</h2>
+        <button class="btn-accent" id="btn-new-done">+ Enregistrer une séance</button>
+      </div>
+      <div id="journal-list" class="session-list"></div>
+    </section>
+
+    <!-- ===== PROGRESSION ===== -->
+    <section class="view" id="view-progression">
+      <div class="panel-head">
+        <h2>Progression</h2>
+        <div class="sport-filter" id="sport-filter">
+          <button class="chip active" data-sport="all">Tout</button>
+          <button class="chip" data-sport="course">Course</button>
+          <button class="chip" data-sport="velo">Vélo</button>
+          <button class="chip" data-sport="muscu">Muscu</button>
+          <button class="chip" data-sport="natation">Natation</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-sub">Volume hebdomadaire</h3>
+        <div id="chart-volume" class="chart-box"></div>
+      </div>
+
+      <div class="panel" id="pace-panel">
+        <h3 class="panel-sub">Évolution de l'allure (course)</h3>
+        <div id="chart-pace" class="chart-box"></div>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-sub">Records personnels</h3>
+        <div id="pr-cards" class="pr-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== SOMMEIL ===== -->
+    <section class="view" id="view-sommeil">
+      <div class="panel-head">
+        <h2>Sommeil</h2>
+        <button class="btn-accent" id="btn-new-sleep">+ Enregistrer une nuit</button>
+      </div>
+      <div class="stat-row" id="sleep-stats"></div>
+      <div class="panel">
+        <h3 class="panel-sub">Objectif 8h — 7 derniers jours</h3>
+        <div id="sleep-bars" class="sleep-bars"></div>
+      </div>
+      <div id="sleep-list" class="session-list"></div>
+    </section>
+
+    <!-- ===== NOURRITURE ===== -->
+    <section class="view" id="view-nourriture">
+      <div class="panel-head">
+        <h2>Nourriture</h2>
+        <button class="btn-accent" id="btn-new-meal">+ Enregistrer un repas</button>
+      </div>
+      <div class="stat-row" id="nutrition-stats"></div>
+
+      <div class="panel">
+        <h3 class="panel-sub">Suggestions selon ta séance</h3>
+        <p class="suggest-hint">Clique un aliment pour pré-remplir un repas.</p>
+        <div id="food-suggestions"></div>
+      </div>
+
+      <div id="nutrition-list" class="session-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== MODALE FORMULAIRE SEANCE ===== -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <form class="modal" id="session-form">
+    <div class="modal-head">
+      <h3 id="modal-title">Nouvelle séance</h3>
+      <button type="button" class="modal-close" id="modal-close">×</button>
+    </div>
+
+    <input type="hidden" id="f-id" />
+    <input type="hidden" id="f-status" value="planifie" />
+
+    <div class="status-toggle" id="status-toggle">
+      <button type="button" data-status="planifie">Planifiée</button>
+      <button type="button" data-status="realise">Réalisée</button>
+      <button type="button" data-status="annulee">Annulée</button>
+    </div>
+
+    <div class="field-row">
+      <label>Sport
+        <select id="f-sport" required>
+          <option value="course">Course à pied</option>
+          <option value="velo">Vélo</option>
+          <option value="muscu">Musculation</option>
+          <option value="natation">Natation</option>
+        </select>
+      </label>
+      <label>Date
+        <input type="date" id="f-date" required />
+      </label>
+    </div>
+
+    <label class="field-full">Type de séance
+      <input type="text" id="f-type" placeholder="Ex : sortie longue, fractionné, récup, bas du corps..." required />
+    </label>
+
+    <div class="field-row" id="row-distance">
+      <label>Distance (km)
+        <input type="number" step="0.1" min="0" id="f-distance" />
+      </label>
+      <label>Durée (min)
+        <input type="number" step="1" min="0" id="f-duree" />
+      </label>
+    </div>
+
+    <div class="field-row" id="row-done-only">
+      <label>Allure / vitesse
+        <input type="text" id="f-allure" placeholder="Ex : 4:50 /km ou 32 km/h" />
+      </label>
+      <label>FC moyenne (bpm)
+        <input type="number" step="1" min="0" id="f-fc" />
+      </label>
+    </div>
+
+    <label class="field-row" id="row-ressenti">
+      Ressenti
+      <div class="ressenti-scale" id="ressenti-scale">
+        <button type="button" data-val="1">1</button>
+        <button type="button" data-val="2">2</button>
+        <button type="button" data-val="3">3</button>
+        <button type="button" data-val="4">4</button>
+        <button type="button" data-val="5">5</button>
+      </div>
+      <input type="hidden" id="f-ressenti" value="" />
+    </label>
+
+    <label class="field-full">Notes
+      <textarea id="f-notes" rows="2" placeholder="Sensations, météo, contexte..."></textarea>
+    </label>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="btn-delete" style="display:none">Supprimer</button>
+      <div class="modal-actions-right">
+        <button type="button" class="btn-ghost" id="modal-cancel">Annuler</button>
+        <button type="submit" class="btn-accent">Enregistrer</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- ===== MODALE SOMMEIL ===== -->
+<div class="modal-backdrop" id="sleep-modal-backdrop">
+  <form class="modal" id="sleep-form">
+    <div class="modal-head">
+      <h3 id="sleep-modal-title">Nouvelle nuit</h3>
+      <button type="button" class="modal-close" id="sleep-modal-close">×</button>
+    </div>
+    <input type="hidden" id="s-id" />
+    <div class="field-row">
+      <label>Date
+        <input type="date" id="s-date" required />
+      </label>
+      <label>Heures dormies
+        <div class="hours-quick">
+          <input type="number" step="0.25" min="0" max="14" id="s-hours" placeholder="8" />
+          <button type="button" id="s-hit-target">8h ✓</button>
+        </div>
+      </label>
+    </div>
+    <label>Qualité (1-5)
+      <div class="ressenti-scale" id="sleep-quality-scale">
+        <button type="button" data-val="1">1</button>
+        <button type="button" data-val="2">2</button>
+        <button type="button" data-val="3">3</button>
+        <button type="button" data-val="4">4</button>
+        <button type="button" data-val="5">5</button>
+      </div>
+      <input type="hidden" id="s-quality" />
+    </label>
+    <label class="field-full">Notes
+      <textarea id="s-notes" rows="2" placeholder="Réveils nocturnes, sensations au réveil..."></textarea>
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="sleep-btn-delete" style="display:none">Supprimer</button>
+      <div class="modal-actions-right">
+        <button type="button" class="btn-ghost" id="sleep-modal-cancel">Annuler</button>
+        <button type="submit" class="btn-accent">Enregistrer</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- ===== MODALE NOURRITURE ===== -->
+<div class="modal-backdrop" id="meal-modal-backdrop">
+  <form class="modal" id="meal-form">
+    <div class="modal-head">
+      <h3 id="meal-modal-title">Nouveau repas</h3>
+      <button type="button" class="modal-close" id="meal-modal-close">×</button>
+    </div>
+    <input type="hidden" id="m-id" />
+    <div class="field-row">
+      <label>Date
+        <input type="date" id="m-date" required />
+      </label>
+      <label>Repas
+        <select id="m-type">
+          <option value="Petit-déjeuner">Petit-déjeuner</option>
+          <option value="Déjeuner">Déjeuner</option>
+          <option value="Dîner">Dîner</option>
+          <option value="Collation">Collation</option>
+        </select>
+      </label>
+    </div>
+    <label class="field-full">Description
+      <textarea id="m-description" rows="2" placeholder="Ce que tu as mangé..." required></textarea>
+    </label>
+    <div class="field-row">
+      <label>Hydratation (L, sur la journée)
+        <input type="number" step="0.1" min="0" id="m-hydration" />
+      </label>
+      <label>Ressenti énergie
+        <div class="ressenti-scale" id="meal-feel-scale">
+          <button type="button" data-val="1">1</button>
+          <button type="button" data-val="2">2</button>
+          <button type="button" data-val="3">3</button>
+          <button type="button" data-val="4">4</button>
+          <button type="button" data-val="5">5</button>
+        </div>
+        <input type="hidden" id="m-feel" />
+      </label>
+    </div>
+    <label class="field-full">Notes
+      <textarea id="m-notes" rows="2" placeholder="Digestion, avant/après séance..."></textarea>
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="meal-btn-delete" style="display:none">Supprimer</button>
+      <div class="modal-actions-right">
+        <button type="button" class="btn-ghost" id="meal-modal-cancel">Annuler</button>
+        <button type="submit" class="btn-accent">Enregistrer</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
